@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Service & Maintenance Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🚗 Car Service & Maintenance Tracker</h1>
+        <p>Keep track of your vehicle's maintenance history</p>
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="#vehicles" onclick="showPage('vehicles')">Vehicles</a></li>
+            <li><a href="#log-service" onclick="showPage('log-service')">Log Service</a></li>
+            <li><a href="#history" onclick="showPage('history')">Service History</a></li>
+            <li><a href="#analytics" onclick="showPage('analytics')">Analytics</a></li>
+        </ul>
+    </nav>
+
+    <!-- Vehicles Page -->
+    <section id="vehicles" class="page" style="display: block;">
+        <h2>My Vehicles</h2>
+        <button class="btn btn-primary" onclick="showVehicleForm()">+ Add New Vehicle</button>
+
+        <div id="vehicle-form" style="display: none;" class="form-container">
+            <h3>Add New Vehicle</h3>
+            <form onsubmit="handleAddVehicle(event)">
+                <input type="text" id="vehicle-name" placeholder="Vehicle Name (e.g., My Car)" required>
+                <input type="text" id="vehicle-number" placeholder="Vehicle Number / License Plate (e.g., ABC-123)" required>
+                <input type="text" id="vehicle-make" placeholder="Make (e.g., Toyota)" required>
+                <input type="text" id="vehicle-model" placeholder="Model (e.g., Camry)" required>
+                <input type="number" id="vehicle-year" placeholder="Year" min="1900" max="2100" required>
+                <select id="vehicle-type" required>
+                    <option value="">Select Type</option>
+                    <option value="GASOLINE">Gasoline</option>
+                    <option value="ELECTRIC">Electric</option>
+                </select>
+                <button type="submit" class="btn btn-success">Add Vehicle</button>
+                <button type="button" class="btn btn-secondary" onclick="hideVehicleForm()">Cancel</button>
+            </form>
+        </div>
+
+        <div id="vehicles-list" class="vehicles-grid">
+            <!-- Vehicles will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Log Service Page -->
+    <section id="log-service" class="page" style="display: none;">
+        <h2>Log Service</h2>
+        <div class="form-container">
+            <form onsubmit="handleLogService(event)">
+                <select id="service-vehicle" required>
+                    <option value="">Select Vehicle</option>
+                </select>
+                <select id="service-type" required>
+                    <option value="">Select Service Type</option>
+                    <option value="Oil Change">Oil Change</option>
+                    <option value="Brake Service">Brake Service</option>
+                    <option value="Tire Rotation">Tire Rotation</option>
+                    <option value="Battery Replacement">Battery Replacement</option>
+                    <option value="Coolant Flush">Coolant Flush</option>
+                    <option value="Air Filter">Air Filter</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="date" id="service-date" required>
+                <input type="number" id="service-cost" placeholder="Cost ($)" step="0.01" required>
+                <input type="number" id="service-mileage" placeholder="Current Mileage" min="0" required>
+                <input type="text" id="service-mechanic" placeholder="Mechanic/Shop Name">
+                <textarea id="service-notes" placeholder="Additional Notes" rows="3"></textarea>
+                <button type="submit" class="btn btn-success">Log Service</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Service History Page -->
+    <section id="history" class="page" style="display: none;">
+        <h2>Service History</h2>
+        <div class="filters">
+            <select id="filter-vehicle" onchange="applyFilters()">
+                <option value="">All Vehicles</option>
+            </select>
+            <select id="filter-service-type" onchange="applyFilters()">
+                <option value="">All Service Types</option>
+            </select>
+        </div>
+        <div id="services-table" class="table-container">
+            <!-- Services will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Service Details Page -->
+    <section id="service-details" class="page" style="display: none;">
+        <button class="btn btn-secondary" onclick="showPage('history')">&larr; Back to History</button>
+        <h2>Service Details</h2>
+        <div id="service-details-content">
+            <!-- Details rendered here -->
+        </div>
+    </section>
+
+    <!-- Analytics Page -->
+    <section id="analytics" class="page" style="display: none;">
+        <h2>Service Analytics</h2>
+        <div class="analytics-container">
+            <div class="analytics-card">
+                <h3>Total Vehicles</h3>
+                <p id="analytics-total-vehicles" class="analytics-value">0</p>
+            </div>
+            <div class="analytics-card">
+                <h3>Total Services Logged</h3>
+                <p id="analytics-total-services" class="analytics-value">0</p>
+            </div>
+            <div class="analytics-card">
+                <h3>Total Spent on Services</h3>
+                <p id="analytics-total-spent" class="analytics-value">$0.00</p>
+            </div>
+        </div>
+        <div id="vehicle-analytics" class="vehicle-analytics-section">
+            <!-- Vehicle-specific analytics will be loaded here -->
+        </div>
+    </section>
+</div>
+
+<!-- Edit Service Modal -->
+<div id="edit-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h3>Edit Service</h3>
+        <form onsubmit="handleUpdateService(event)">
+            <input type="hidden" id="edit-service-id">
+            <select id="edit-service-vehicle" disabled>
+                <option value="">Select Vehicle</option>
+            </select>
+            <select id="edit-service-type" required>
+                <option value="">Select Service Type</option>
+                <option value="Oil Change">Oil Change</option>
+                <option value="Brake Service">Brake Service</option>
+                <option value="Tire Rotation">Tire Rotation</option>
+                <option value="Battery Replacement">Battery Replacement</option>
+                <option value="Coolant Flush">Coolant Flush</option>
+                <option value="Air Filter">Air Filter</option>
+                <option value="Other">Other</option>
+            </select>
+            <input type="date" id="edit-service-date" required>
+            <input type="number" id="edit-service-cost" placeholder="Cost ($)" step="0.01" required>
+            <input type="number" id="edit-service-mileage" placeholder="Current Mileage" min="0" required>
+            <input type="text" id="edit-service-mechanic" placeholder="Mechanic/Shop Name">
+            <textarea id="edit-service-notes" placeholder="Additional Notes" rows="3"></textarea>
+            <button type="submit" class="btn btn-success">Update Service</button>
+            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
